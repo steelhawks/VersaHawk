@@ -142,20 +142,21 @@ public class Drivetrain extends Subsystem {
     
     //this variable locks in the BangBang method, allows it to set final distance once per successful run.
     private boolean bangBangStarted = false;
-
+    private double finalLeftLocation = 0;
+    private double finalRightLocation = 0;
+    
     public boolean bangBang(double distance, double threshold, double speed){
-    	double finalLocation;
     	double currentLeftDistance = leftEncoder.getDistance();
     	double currentRightDistance = rightEncoder.getDistance();
     	double left = 0, right = 0;
     	boolean leftTruth, rightTruth;
     	
-    	//TODO switch finalLocation to 2 different variables for left and right
     	if(!bangBangStarted){
-    		finalLocation = distance + ((currentLeftDistance + currentRightDistance)/2);
+    		finalRightLocation = distance + currentRightDistance;
+    		finalLeftLocation = distance + currentLeftDistance;
     	}
     	
-    	if (currentLeftDistance > distance - threshold && currentLeftDistance < distance + threshold){
+    	if (currentLeftDistance > finalLeftLocation - threshold && currentLeftDistance < finalLeftLocation + threshold){
     		leftTruth = true;
     	}
     	else{
@@ -163,7 +164,7 @@ public class Drivetrain extends Subsystem {
     		leftTruth = false;
     	}
     	
-    	if (currentRightDistance > distance - threshold && currentRightDistance < distance + threshold){
+    	if (currentRightDistance > finalRightLocation - threshold && currentRightDistance < finalRightLocation + threshold){
     		rightTruth = true;
     	}
     	else{
@@ -173,6 +174,8 @@ public class Drivetrain extends Subsystem {
     	
     	if (leftTruth && rightTruth){
     		bangBangStarted = false;
+    		finalLeftLocation = 0;
+    		finalRightLocation = 0;
     		return true;
     	}
     	tankDrive(left, right);
