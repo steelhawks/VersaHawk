@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
@@ -44,6 +45,10 @@ public class Drivetrain extends Subsystem {
 	//standard RobotDrive from wpilib
 	RobotDrive drive = new RobotDrive(frontLeftCANTalon, middleLeftCANTalon, frontRightCANTalon, middleRightCANTalon);
 	
+	//PID stuff
+	PIDController rightSide;
+	PIDController leftSide;
+	
 	public Drivetrain(){
 		//add all loggables to a list, then assign the logger
 		loggingList.add(frontLeftCANTalon);
@@ -58,13 +63,24 @@ public class Drivetrain extends Subsystem {
 		loggingList.add(leftEncoder);
 		loggingList.add(rightEncoder);
 		
+		//ready logger
 		logger = new HawkLogger("drivetrain", loggingList);
 		logger.setup();
 		
+		//ready encoders
 		leftEncoder.setDistancePerPulse(constants.distancePerPulse);
 		rightEncoder.setDistancePerPulse(constants.distancePerPulse);
+		
+		//ready shifting gearboxes
 		leftShift.set(DoubleSolenoid.Value.kForward);
 		matchSolenoids();
+		
+		//ready PIDControllers
+		leftSide = new PIDController(constants.kP, constants.kI, constants.kD, constants.kF, leftEncoder, frontLeftCANTalon);
+		rightSide = new PIDController(constants.kP,constants.kI, constants.kD, constants.kF, rightEncoder,frontRightCANTalon );
+		leftSide.setPercentTolerance(constants.PIDtolerance);
+		rightSide.setPercentTolerance(constants.PIDtolerance);
+		
 	}
 	
 	
@@ -73,16 +89,20 @@ public class Drivetrain extends Subsystem {
         setDefaultCommand(new Drive());
     }
     
-    private void driveMotorsMatched(CANTalon leader, CANTalon follower){
+    private void matchMotors(CANTalon leader, CANTalon follower){
     	follower.set(leader.get());
+    }
+    private void matchMotors(CANTalon leader, CANTalon followerI, CANTalon followerII){
+    	followerI.set(leader.get());
+    	followerII.set(leader.get());
     }
     
     //arcade drive method for 6-CIM drivetrain with logging
     public void arcadeDrive(double move, double rotate){
     	drive.arcadeDrive(move, rotate);
-    	driveMotorsMatched(middleLeftCANTalon, rearLeftCANTalon);
-    	driveMotorsMatched(middleRightCANTalon, rearRightCANTalon);
-    	logger.log();
+    	matchMotors(middleLeftCANTalon, rearLeftCANTalon);
+    	matchMotors(middleRightCANTalon, rearRightCANTalon);
+    	logger.log(constants.logging);
     }
     
     //use X-axis for twist
@@ -102,9 +122,9 @@ public class Drivetrain extends Subsystem {
     //tank drive method for 6-CIM drivetrain with logging
     public void tankDrive(double leftSide, double rightSide){
     	drive.tankDrive(leftSide, rightSide);
-    	driveMotorsMatched(middleLeftCANTalon, rearLeftCANTalon);
-    	driveMotorsMatched(middleRightCANTalon, rearRightCANTalon);
-    	logger.log();
+    	matchMotors(middleLeftCANTalon, rearLeftCANTalon);
+    	matchMotors(middleRightCANTalon, rearRightCANTalon);
+    	logger.log(constants.logging);
     }
     
     //use joysticks for tankdrive
@@ -130,7 +150,7 @@ public class Drivetrain extends Subsystem {
     		leftShift.set(DoubleSolenoid.Value.kForward);
     	}
     	matchSolenoids();
-    	logger.log();
+    	logger.log(constants.logging);
     }
     
     //keep solenoids unified
@@ -190,5 +210,68 @@ public class Drivetrain extends Subsystem {
     
     //End bangBang autonomous
     
+    private boolean PIDinitialized = false;
+    
+    public void setBothPID(double setpoint){
+    	leftSide.setSetpoint(leftEncoder.getDistance()+setpoint);
+    	rightSide.setSetpoint(rightEncoder.getDistance()+setpoint);
+    	PIDinitialized = true;
+    }
+    
+    public void setIndividualPID(double leftSet, double rightSet){
+    	leftSide.setSetpoint(leftEncoder.getDistance()+leftSet);
+    	rightSide.setSetpoint(rightEncoder.getDistance()+rightSet);
+    	PIDinitialized = true;
+    }
+    
+    public boolean runPID(double left, double right){
+    	//make sure we have setpoints
+    	if (PIDinitialized){
+	    	//start moving
+    		leftSide.enable();
+	    	rightSide.enable();
+	    	matchMotors(frontRightCANTalon, middleRightCANTalon, rearRightCANTalon);
+	    	matchMotors(frontLeftCANTalon, middleLeftCANTalon, rearLeftCANTalon);
+	    	//check if we're on target
+	    	if (leftSide.onTarget() && rightSide.onTarget()){
+	    		leftSide.disable();
+	    		rightSide.disable();
+	    		PIDinitialized = false;
+	    		return true;
+	    	}
+	    	logger.log(constants.logging);
+	    	return false;
+    	}
+    	//set setpoints if we don't already have them
+    	else {
+    		setIndividualPID(left, right);
+    		return false;
+    	}
+    }
+    
+    public boolean runPID(double setpoint){
+    	//make sure we have setpoints
+    	if (PIDinitialized){
+    		//start moving
+    		leftSide.enable();
+	    	rightSide.enable();
+	    	matchMotors(frontRightCANTalon, middleRightCANTalon, rearRightCANTalon);
+	    	matchMotors(frontLeftCANTalon, middleLeftCANTalon, rearLeftCANTalon);
+	    	//check if we're on target
+	    	if (leftSide.onTarget() && rightSide.onTarget()){
+	    		leftSide.disable();
+	    		rightSide.disable();
+	    		PIDinitialized = false;
+	    		return true;
+	    	}
+	    	logger.log(constants.logging);
+	    	return false;
+    	}
+    	//set setpoints if we don't already have them
+    	else {
+    		setBothPID(setpoint);
+    		return false;
+    	}
+    }
 }
 

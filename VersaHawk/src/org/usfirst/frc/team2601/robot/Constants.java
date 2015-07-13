@@ -53,6 +53,14 @@ public class Constants {
 	public final double distancePerPulse = 0.5;
 	public final double defaultBangBangSpeed = 0.5;
 	
+	public final boolean logging = true;
+	
+	public final double kP = 0.0;
+	public final double kI = 0.0;
+	public final double kD = 0.0;
+	public final double kF = 0.0;
+	public final double PIDtolerance = 20.0;
+	
 	private Constants(){
 		if (system == System_Type.Alpha){
 			frontLeftTalonAddress = 1;

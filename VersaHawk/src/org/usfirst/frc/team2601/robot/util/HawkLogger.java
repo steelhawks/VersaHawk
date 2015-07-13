@@ -56,10 +56,14 @@ public class HawkLogger {
 	
 	//this is where the magic happens (ish)
 	//call this method to actually log data
-	public void log(){
-		getData();
-		writer.writeLine(dataList);
-		dataList.clear();
+	public void log(boolean permission){
+		if(permission)
+		{
+			getData();
+			writer.writeLine(dataList);
+			dataList.clear();
+		}
+		else return;
 	}
 	
 	//last thing you should call before shutting down
