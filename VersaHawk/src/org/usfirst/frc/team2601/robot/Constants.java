@@ -54,22 +54,22 @@ public class Constants {
 	public final double defaultBangBangSpeed = 0.5;
 	
 	public final boolean logging = true;
-	
-	public final double kP = 0.0;
-	public final double kI = 0.0;
-	public final double kD = 0.0;
-	public final double kF = 0.0;
-	public final double PIDtolerance = 20.0;
+	       
+	public double kP = 0.0;
+	public double kI = 0.0;
+	public double kD = 0.0;
+	public double kF = 0.0;
+	public double PIDtolerance = 20.0;
 	
 	private Constants(){
 		if (system == System_Type.Alpha){
 			frontLeftTalonAddress = 1;
-			middleLeftTalonAddress = 2;
-			rearLeftTalonAddress = 3;
+			middleLeftTalonAddress = 12;
+			rearLeftTalonAddress = 14;
 			
 			frontRightTalonAddress = 4;
-			middleRightTalonAddress = 5;
-			rearRightTalonAddress = 6;
+			middleRightTalonAddress = 2;
+			rearRightTalonAddress = 3;
 			
 			leftEncoderPortI = 1;
 			leftEncoderPortII = 2;

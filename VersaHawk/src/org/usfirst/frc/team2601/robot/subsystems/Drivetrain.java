@@ -21,6 +21,7 @@ public class Drivetrain extends Subsystem {
     //get a single instance of the constants, refer ONLY TO THIS for constant vars
 	Constants constants = Constants.getInstance();
 	
+	
 	//Declare HawkCANTalons
 	HawkCANTalon frontLeftCANTalon = new HawkCANTalon(constants.frontLeftTalonAddress, "frontLeftCANTalon");
 	HawkCANTalon middleLeftCANTalon = new HawkCANTalon(constants.middleLeftTalonAddress, "middleLeftCANTalon");
@@ -89,6 +90,7 @@ public class Drivetrain extends Subsystem {
         setDefaultCommand(new Drive());
     }
     
+    //functions to match motors together
     private void matchMotors(CANTalon leader, CANTalon follower){
     	follower.set(leader.get());
     }
@@ -96,6 +98,7 @@ public class Drivetrain extends Subsystem {
     	followerI.set(leader.get());
     	followerII.set(leader.get());
     }
+    
     
     //arcade drive method for 6-CIM drivetrain with logging
     public void arcadeDrive(double move, double rotate){
