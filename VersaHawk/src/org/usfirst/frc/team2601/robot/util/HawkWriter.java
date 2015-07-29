@@ -18,7 +18,7 @@ public class HawkWriter extends FileWriter{
 		return preppedFilename;
 	}
 	public HawkWriter(String filename) throws IOException{
-		super(filenamePrep(filename));
+		super(filenamePrep(filename), true);
 		this.filename = filenamePrep(filename);
 	}
 	
@@ -30,7 +30,7 @@ public class HawkWriter extends FileWriter{
 				write(HawkWriter.delim);
 			}
 			write(HawkWriter.lineEnder);
-			flush();
+			//flush();
 		}
 		catch(IOException e){
 			e.printStackTrace();

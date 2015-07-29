@@ -27,6 +27,7 @@ public class HawkDigitalInput extends DigitalInput implements HawkLoggable {
 
 	@Override
 	public ArrayList<String> getKeys() {
+		setKeys();
 		return keyList;
 	}
 

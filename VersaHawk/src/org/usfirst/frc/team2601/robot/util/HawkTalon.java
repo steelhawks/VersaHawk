@@ -41,6 +41,7 @@ public class HawkTalon extends Talon implements HawkLoggable{
 
 	@Override
 	public ArrayList<String> getKeys() {
+		setKeys();
 		return keyList;
 	}
 

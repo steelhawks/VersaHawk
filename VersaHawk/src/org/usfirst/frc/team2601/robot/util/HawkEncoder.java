@@ -34,6 +34,7 @@ public class HawkEncoder extends Encoder implements HawkLoggable {
 
 	@Override
 	public ArrayList<String> getKeys() {
+		setKeys();
 		return keyList;
 	}
 

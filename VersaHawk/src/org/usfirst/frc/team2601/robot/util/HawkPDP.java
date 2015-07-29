@@ -21,6 +21,7 @@ public class HawkPDP extends PowerDistributionPanel implements HawkLoggable {
 
 	@Override
 	public ArrayList<String> getKeys() {
+		setKeys();
 		return keyList;
 	}
 

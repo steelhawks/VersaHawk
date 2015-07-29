@@ -31,7 +31,7 @@ public class HawkUltrasonic extends Ultrasonic implements HawkLoggable {
 
 	@Override
 	public ArrayList<String> getKeys() {
-		// TODO Auto-generated method stub
+		setKeys();
 		return keyList;
 	}
 

@@ -26,7 +26,7 @@ public class HawkLogger {
 	
 	//run only once, takes the keys from a single component
 	private void stripKeys(HawkLoggable component){
-		ArrayList<String> bareKeys = new ArrayList<String>(component.getKeys().size());
+		ArrayList<String> bareKeys = component.getKeys();
 		Iterator<String> i = bareKeys.iterator();
 		while (i.hasNext()){
 			keyList.add(component.getName()+" "+i.next());
@@ -34,7 +34,12 @@ public class HawkLogger {
 	}
 	//run each time data is taken, takes data from a single component
 	private void stripData(HawkLoggable component){
-		dataList.addAll(component.getData());
+		ArrayList<String> bareData = component.getData();
+		Iterator<String> i = bareData.iterator();
+		while (i.hasNext()){
+			dataList.add(i.next());
+		}
+		
 	}
 	
 	//run once, sets headers for the logger file
@@ -57,9 +62,9 @@ public class HawkLogger {
 	//this is where the magic happens (ish)
 	//call this method to actually log data
 	public void log(boolean permission){
-		if(permission)
-		{
+		if(permission){
 			getData();
+			System.out.println(dataList);
 			writer.writeLine(dataList);
 			dataList.clear();
 		}

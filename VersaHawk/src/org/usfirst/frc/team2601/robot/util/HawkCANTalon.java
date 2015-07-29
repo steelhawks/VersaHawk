@@ -46,6 +46,7 @@ public class HawkCANTalon extends CANTalon implements HawkLoggable {
 	
 	@Override
 	public ArrayList<String> getKeys() {
+		setKeys();
 		return keyList;
 	}
 
@@ -53,6 +54,7 @@ public class HawkCANTalon extends CANTalon implements HawkLoggable {
 	public ArrayList<String> getData() {
 		dataList.clear();
 		setData();
+		System.out.println(dataList);
 		return dataList;
 	}
 

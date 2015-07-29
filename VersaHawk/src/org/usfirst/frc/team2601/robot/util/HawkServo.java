@@ -29,6 +29,7 @@ public class HawkServo extends Servo implements HawkLoggable {
 
 	@Override
 	public ArrayList<String> getKeys() {
+		setKeys();
 		return keyList;
 	}
 

@@ -20,6 +20,7 @@ public class HawkCompressor extends Compressor implements HawkLoggable {
 
 	@Override
 	public ArrayList<String> getKeys() {
+		setKeys();
 		return keyList;
 	}
 
