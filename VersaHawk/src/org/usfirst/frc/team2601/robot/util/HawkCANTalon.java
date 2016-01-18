@@ -38,7 +38,7 @@ public class HawkCANTalon extends CANTalon implements HawkLoggable {
 	public void setData() {
 		dataList.add(Integer.toString(canNumber));
 		dataList.add(Double.toString(get()));	
-		dataList.add(Double.toString(getTemp()));
+		dataList.add(Double.toString(getTemperature()));
 		dataList.add(Double.toString(getOutputCurrent()));
 		dataList.add(Double.toString(getOutputVoltage()));
 		dataList.add(Double.toString(getBusVoltage()));
