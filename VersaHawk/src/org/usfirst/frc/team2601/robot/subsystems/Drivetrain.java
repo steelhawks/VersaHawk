@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.usfirst.frc.team2601.robot.commands.Drive;
 import org.usfirst.frc.team2601.robot.Constants;
@@ -105,6 +106,8 @@ public class Drivetrain extends Subsystem {
     	drive.arcadeDrive(move, rotate);
     	matchMotors(middleLeftCANTalon, rearLeftCANTalon);
     	matchMotors(middleRightCANTalon, rearRightCANTalon);
+    	SmartDashboard.putNumber("leftEncoder", leftEncoder.getDistance());
+    	SmartDashboard.putNumber("rightEncoder", rightEncoder.getDistance());
     	logger.log(constants.logging);
     }
     
@@ -113,20 +116,25 @@ public class Drivetrain extends Subsystem {
     	double move = stick.getY();
     	double rotate = stick.getX();
     	arcadeDrive(move, rotate);
+    	System.out.println("arcadeDriveX");
     }
-    
+    ;
     //use joystick twist for twist
     public void arcadeDriveTwist(Joystick stick){
     	double move = stick.getY();
     	double rotate = stick.getTwist();
     	arcadeDrive(move, rotate);
+    	System.out.println("arcadeDriveTwist");
     }
     
     //tank drive method for 6-CIM drivetrain with logging
     public void tankDrive(double leftSide, double rightSide){
     	drive.tankDrive(leftSide, rightSide);
-    	matchMotors(middleLeftCANTalon, rearLeftCANTalon);
-    	matchMotors(middleRightCANTalon, rearRightCANTalon);
+    	matchMotors(frontLeftCANTalon, rearLeftCANTalon);
+    	SmartDashboard.putNumber("leftEncoder", leftEncoder.getDistance());
+    	SmartDashboard.putNumber("rightEncoder", rightEncoder.getDistance());
+    	matchMotors(frontRightCANTalon, rearRightCANTalon);
+    	System.out.println("tankDrive");
     	logger.log(constants.logging);
     }
     
@@ -135,6 +143,7 @@ public class Drivetrain extends Subsystem {
     	double left = leftStick.getY();
     	double right = rightStick.getY();
     	tankDrive(left, right);
+    	System.out.println("joysticktankDrive");
     }
     
     //use gamepad for tankdrive
@@ -142,6 +151,7 @@ public class Drivetrain extends Subsystem {
     	double left = gamepad.getLeftY();
     	double right = gamepad.getRightY();
     	tankDrive(left, right);
+    	System.out.println("gamepadtankDrive");
     }
     
     //toggle solenoids
@@ -154,6 +164,7 @@ public class Drivetrain extends Subsystem {
     	}
     	matchSolenoids();
     	logger.log(constants.logging);
+    	System.out.println("switchSolenoids");
     }
     
     //keep solenoids unified
@@ -229,6 +240,7 @@ public class Drivetrain extends Subsystem {
     
     public boolean runPID(double left, double right){
     	//make sure we have setpoints
+    	SmartDashboard.putBoolean("pidInit", PIDinitialized);
     	if (PIDinitialized){
 	    	//start moving
     		leftSide.enable();
@@ -243,6 +255,8 @@ public class Drivetrain extends Subsystem {
 	    		return true;
 	    	}
 	    	logger.log(constants.logging);
+	    	SmartDashboard.putNumber("leftEncoder", leftEncoder.getDistance());
+	    	SmartDashboard.putNumber("rightEncoder", rightEncoder.getDistance());
 	    	return false;
     	}
     	//set setpoints if we don't already have them
@@ -260,6 +274,7 @@ public class Drivetrain extends Subsystem {
 	    	rightSide.enable();
 	    	matchMotors(frontRightCANTalon, middleRightCANTalon, rearRightCANTalon);
 	    	matchMotors(frontLeftCANTalon, middleLeftCANTalon, rearLeftCANTalon);
+	    	System.out.println("PID DRive shit");
 	    	//check if we're on target
 	    	if (leftSide.onTarget() && rightSide.onTarget()){
 	    		leftSide.disable();

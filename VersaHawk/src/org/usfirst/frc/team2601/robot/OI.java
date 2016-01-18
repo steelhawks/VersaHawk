@@ -3,6 +3,8 @@ package org.usfirst.frc.team2601.robot;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 
+import org.usfirst.frc.team2601.robot.commands.Drive;
+import org.usfirst.frc.team2601.robot.commands.PIDdrive;
 import org.usfirst.frc.team2601.robot.commands.Shift;
 
 import edu.wpi.first.wpilibj.Joystick;
@@ -20,6 +22,8 @@ public class OI {
 	public static F310 gamepad;
 	Constants constants = Constants.getInstance();
 	public static Button shift;
+	public static Button PIDstart;
+	public static Button PIDstop;
 	
 	public OI(){
 		Constants.Operation_Type drivetype = constants.driverType;
@@ -36,10 +40,14 @@ public class OI {
 		case GamepadTank: 
 			gamepad = new F310(constants.primaryJoystickPort);
 			shift = new JoystickButton(gamepad, F310.kGamepadButtonShoulderR);
+			PIDstart = new JoystickButton(gamepad, F310.kGamepadButtonShoulderL);
+			PIDstop = new JoystickButton(gamepad, F310.kGamepadButtonA);
 			break;
 		}
 		
 		shift.whenPressed(new Shift());
+		PIDstart.whenPressed(new PIDdrive(1200,1200));
+		PIDstop.whenPressed(new Drive());
 	}
     //// CREATING BUTTONS
     // One type of button is a joystick button which is any button on a joystick.

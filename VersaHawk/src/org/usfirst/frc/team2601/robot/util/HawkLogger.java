@@ -64,7 +64,7 @@ public class HawkLogger {
 	public void log(boolean permission){
 		if(permission){
 			getData();
-			System.out.println(dataList);
+			//System.out.println(dataList);
 			writer.writeLine(dataList);
 			dataList.clear();
 		}

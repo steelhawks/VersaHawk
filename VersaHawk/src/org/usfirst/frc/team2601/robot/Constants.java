@@ -17,7 +17,7 @@ public class Constants {
 	public System_Type system = System_Type.Alpha;
 	
 	public enum Operation_Type {JoystickTank, JoystickArcade, GamepadTank}
-	public Operation_Type driverType = Operation_Type.JoystickArcade;
+	public Operation_Type driverType = Operation_Type.GamepadTank;
 	
 	//CAN addresses HERE
 	public int frontLeftTalonAddress;
@@ -50,14 +50,14 @@ public class Constants {
 	public int rightSolenoidReverseChannel = 3;
 	
 	//miscellaneous constants
-	public final double distancePerPulse = 0.5;
+	public final double distancePerPulse = 0.045;
 	public final double defaultBangBangSpeed = 0.5;
 	
 	public final boolean logging = true;
 	       
 	public double kP = 0.0;
 	public double kI = 0.0;
-	public double kD = 0.0;
+	public double kD = 0.1;
 	public double kF = 0.0;
 	public double PIDtolerance = 20.0;
 	
@@ -71,10 +71,10 @@ public class Constants {
 			middleRightTalonAddress = 2;
 			rearRightTalonAddress = 3;
 			
-			leftEncoderPortI = 1;
-			leftEncoderPortII = 2;
-			rightEncoderPortI = 3;
-			rightEncoderPortII = 4;
+			leftEncoderPortI = 0;
+			leftEncoderPortII = 1;
+			rightEncoderPortI = 2;
+			rightEncoderPortII = 3;
 		}
 		
 		else if (system == System_Type.Beta){
