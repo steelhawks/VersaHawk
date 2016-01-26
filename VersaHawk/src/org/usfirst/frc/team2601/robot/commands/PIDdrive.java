@@ -1,7 +1,7 @@
 package org.usfirst.frc.team2601.robot.commands;
 
 import org.usfirst.frc.team2601.robot.Robot;
-import org.usfirst.frc.team2601.robot.commands.PIDstop;
+
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
@@ -20,22 +20,21 @@ public class PIDdrive extends Command {
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	Robot.drivetrain.runPID(leftSet, rightSet);
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	//finished = Robot.drivetrain.runPID(leftSet, rightSet);
+    	finished = Robot.drivetrain.runPID(leftSet, rightSet);
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-    	return true;
+        return finished;
     }
 
     // Called once after isFinished returns true
     protected void end() {
-    	//new PIDstop();
+    	new Drive();
     }
 
     // Called when another command which requires one or more of the same

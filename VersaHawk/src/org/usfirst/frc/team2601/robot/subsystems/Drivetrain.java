@@ -37,21 +37,19 @@ public class Drivetrain extends Subsystem {
 	HawkDoubleSolenoid rightShift = new HawkDoubleSolenoid(constants.rightSolenoidForwardChannel,constants.rightSolenoidReverseChannel, "rightShiftSolenoid");
 	
 	//Declare Encoders
-	HawkEncoder leftEncoder = new HawkEncoder(constants.leftEncoderPortI,constants.leftEncoderPortII,true, EncodingType.k4X, "leftEncoder");
-	HawkEncoder rightEncoder = new HawkEncoder(constants.rightEncoderPortI,constants.rightEncoderPortII,false,EncodingType.k4X, "rightEncoder");
+	HawkEncoder leftEncoder = new HawkEncoder(constants.leftEncoderPortI,constants.leftEncoderPortII,false, EncodingType.k4X, "leftEncoder");
+	HawkEncoder rightEncoder = new HawkEncoder(constants.rightEncoderPortI,constants.rightEncoderPortII,true,EncodingType.k4X, "rightEncoder");
 	
 	//this is used for the logger
 	private ArrayList<HawkLoggable> loggingList = new ArrayList<HawkLoggable>();
 	public HawkLogger logger;
 	
-
-
 	//standard RobotDrive from wpilib
 	RobotDrive drive = new RobotDrive(frontLeftCANTalon, middleLeftCANTalon, frontRightCANTalon, middleRightCANTalon);
 	
 	//PID stuff
-	public PIDController rightSide;
-	public PIDController leftSide;
+	PIDController rightSide;
+	PIDController leftSide;
 	
 	public Drivetrain(){
 		//add all loggables to a list, then assign the logger
@@ -130,34 +128,12 @@ public class Drivetrain extends Subsystem {
     }
     
     //tank drive method for 6-CIM drivetrain with logging
-    public void tankDrive(double left, double right){
-    	if (PIDinitialized && PIDenabled){
-	    	//check if we're on target
-	    	if(Math.abs(((leftSide.getError()/leftSide.getSetpoint())*100))<=constants.PIDtolerance){
-	    		leftSide.disable();
-	    	}
-	    	if (Math.abs(((rightSide.getError()/rightSide.getSetpoint())*100))<=constants.PIDtolerance){
-	    		rightSide.disable();
-	    	}
-	    	if (Math.abs(((leftSide.getError()/leftSide.getSetpoint())*100))<=constants.PIDtolerance && Math.abs(((rightSide.getError()/rightSide.getSetpoint())*100))<=constants.PIDtolerance){
-	    		leftSide.disable();
-	    		rightSide.disable();
-	    		PIDinitialized = false;
-	    		PIDenabled = false;
-	    	
-	    		}
-	    	}
-    	drive.tankDrive(left, right);
+    public void tankDrive(double leftSide, double rightSide){
+    	drive.tankDrive(leftSide, rightSide);
+    	matchMotors(frontLeftCANTalon, rearLeftCANTalon);
     	SmartDashboard.putNumber("leftEncoder", leftEncoder.getDistance());
     	SmartDashboard.putNumber("rightEncoder", rightEncoder.getDistance());
-    	SmartDashboard.putNumber("frontRight", frontRightCANTalon.get());
-    	SmartDashboard.putNumber("middleRight", middleRightCANTalon.get());
-    	SmartDashboard.putNumber("rearRight", rearRightCANTalon.get());
-    	SmartDashboard.putNumber("frontLeft", frontLeftCANTalon.get());
-    	SmartDashboard.putNumber("middleLeft", middleLeftCANTalon.get());
-    	SmartDashboard.putNumber("rearLeft", rearLeftCANTalon.get());
-    	matchMotors(frontLeftCANTalon, middleLeftCANTalon, rearLeftCANTalon);
-    	matchMotors(frontRightCANTalon, middleRightCANTalon, rearRightCANTalon);
+    	matchMotors(frontRightCANTalon, rearRightCANTalon);
     	System.out.println("tankDrive");
     	logger.log(constants.logging);
     }
@@ -200,8 +176,8 @@ public class Drivetrain extends Subsystem {
     
     //this variable locks in the BangBang method, allows it to set final distance once per successful run.
     private boolean bangBangStarted = false;
-    private double finalLeftLocation = 0;//10 I changed these to 10 but reset them to 0
-    private double finalRightLocation = 0;//10 
+    private double finalLeftLocation = 0;
+    private double finalRightLocation = 0;
     
     public boolean bangBang(double distance, double threshold, double speed){
     	double currentLeftDistance = leftEncoder.getDistance();
@@ -249,7 +225,6 @@ public class Drivetrain extends Subsystem {
     //End bangBang autonomous
     
     private boolean PIDinitialized = false;
-    private boolean PIDenabled = false;
     
     public void setBothPID(double setpoint){
     	leftSide.setSetpoint(leftEncoder.getDistance()+setpoint);
@@ -267,37 +242,21 @@ public class Drivetrain extends Subsystem {
     	//make sure we have setpoints
     	SmartDashboard.putBoolean("pidInit", PIDinitialized);
     	if (PIDinitialized){
+	    	//start moving
+    		leftSide.enable();
+	    	rightSide.enable();
+	    	matchMotors(frontRightCANTalon, middleRightCANTalon, rearRightCANTalon);
+	    	matchMotors(frontLeftCANTalon, middleLeftCANTalon, rearLeftCANTalon);
 	    	//check if we're on target
-	    	if(leftSide.onTarget()){
-	    		leftSide.disable();
-	    	}
-	    	if (rightSide.onTarget()){
-	    		rightSide.disable();
-	    	}
 	    	if (leftSide.onTarget() && rightSide.onTarget()){
 	    		leftSide.disable();
 	    		rightSide.disable();
 	    		PIDinitialized = false;
 	    		return true;
 	    	}
-	    	//start moving
-    		if(!PIDenabled){
-    			leftSide.enable();
-    			rightSide.enable();
-    			PIDenabled = true;
-    		}
-	    	
-    		matchMotors(frontRightCANTalon, middleRightCANTalon, rearRightCANTalon);
-	    	matchMotors(frontLeftCANTalon, middleLeftCANTalon, rearLeftCANTalon);
-	    	SmartDashboard.putNumber("frontRight", frontRightCANTalon.getSpeed());
-	    	SmartDashboard.putNumber("middleRight", middleRightCANTalon.getSpeed());
-	    	SmartDashboard.putNumber("rearRight", rearRightCANTalon.getSpeed());
-	    	SmartDashboard.putNumber("frontLeft", frontLeftCANTalon.getSpeed());
-	    	SmartDashboard.putNumber("middleLeft", middleLeftCANTalon.getSpeed());
-	    	SmartDashboard.putNumber("rearLeft", rearLeftCANTalon.getSpeed());
-	    	
-	    	System.out.println("PID Drive shit");
 	    	logger.log(constants.logging);
+	    	SmartDashboard.putNumber("leftEncoder", leftEncoder.getDistance());
+	    	SmartDashboard.putNumber("rightEncoder", rightEncoder.getDistance());
 	    	return false;
     	}
     	//set setpoints if we don't already have them
@@ -309,31 +268,20 @@ public class Drivetrain extends Subsystem {
     
     public boolean runPID(double setpoint){
     	//make sure we have setpoints
-    	System.out.println("running PID");
     	if (PIDinitialized){
+    		//start moving
+    		leftSide.enable();
+	    	rightSide.enable();
+	    	matchMotors(frontRightCANTalon, middleRightCANTalon, rearRightCANTalon);
+	    	matchMotors(frontLeftCANTalon, middleLeftCANTalon, rearLeftCANTalon);
+	    	System.out.println("PID DRive shit");
 	    	//check if we're on target
-	    	if(leftSide.onTarget()){
-	    		leftSide.disable();
-	    	}
-	    	if (rightSide.onTarget()){
-	    		rightSide.disable();
-	    	}
 	    	if (leftSide.onTarget() && rightSide.onTarget()){
 	    		leftSide.disable();
 	    		rightSide.disable();
 	    		PIDinitialized = false;
 	    		return true;
 	    	}
-	    	//start moving
-    		if(!PIDenabled){
-    			leftSide.enable();
-    			rightSide.enable();
-    			PIDenabled = true;
-    		}
-	    	
-    		matchMotors(frontRightCANTalon, middleRightCANTalon, rearRightCANTalon);
-	    	matchMotors(frontLeftCANTalon, middleLeftCANTalon, rearLeftCANTalon);
-	    	System.out.println("PID Drive shit");
 	    	logger.log(constants.logging);
 	    	return false;
     	}
@@ -343,14 +291,5 @@ public class Drivetrain extends Subsystem {
     		return false;
     	}
     }
-    
-    public boolean stopPID(){
-    	PIDinitialized = false;
-    	leftSide.disable();
-    	rightSide.disable();
-    	PIDenabled = false;
-    	return true;
-    }
-    
 }
 
