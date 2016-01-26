@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import org.usfirst.frc.team2601.robot.commands.Drive;
 import org.usfirst.frc.team2601.robot.commands.PIDdrive;
 import org.usfirst.frc.team2601.robot.commands.Shift;
+import org.usfirst.frc.team2601.robot.commands.PIDstop;
 
 import edu.wpi.first.wpilibj.Joystick;
 
@@ -46,8 +47,8 @@ public class OI {
 		}
 		
 		shift.whenPressed(new Shift());
-		PIDstart.whenPressed(new PIDdrive(1200,1200));
-		PIDstop.whenPressed(new Drive());
+		PIDstart.whenPressed(new PIDdrive(-200,200));
+		PIDstop.whenPressed(new PIDstop());
 	}
     //// CREATING BUTTONS
     // One type of button is a joystick button which is any button on a joystick.
