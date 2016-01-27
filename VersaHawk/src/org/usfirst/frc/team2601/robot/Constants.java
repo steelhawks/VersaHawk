@@ -59,7 +59,7 @@ public class Constants {
 	public double kI = 0.0;
 	public double kD = 0.1;
 	public double kF = 0.0;
-	public double PIDtolerance = 20.0;
+	public double PIDtolerance = 5.0;
 	
 	private Constants(){
 		if (system == System_Type.Alpha){
