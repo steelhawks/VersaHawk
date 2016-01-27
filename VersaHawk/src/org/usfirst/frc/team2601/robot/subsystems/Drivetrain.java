@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.livewindow.LiveWindowSendable;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.usfirst.frc.team2601.robot.commands.Drive;
 import org.usfirst.frc.team2601.robot.Constants;
@@ -124,13 +125,13 @@ public class Drivetrain extends Subsystem {
     public void tankDrive(double left, double right){
     	drive.tankDrive(left, right);
     	if (PIDinitialized && PIDenabled){
-    	if (targetCheck(leftSide.getError(),leftSide.getSetpoint())){
+    	/*if (targetCheck(leftSide.getError(),leftSide.getSetpoint())){
     		leftSide.disable();
     	}
     	
     	if (targetCheck(rightSide.getError(),rightSide.getSetpoint())){
     		rightSide.disable();
-    	}
+    	}*/
     	
     	if (targetCheck(leftSide.getError(),leftSide.getSetpoint()) && targetCheck(rightSide.getError(),rightSide.getSetpoint())){
     		leftSide.disable();
@@ -141,6 +142,16 @@ public class Drivetrain extends Subsystem {
     	}}
     	matchMotors(frontLeftCANTalon, middleLeftCANTalon, rearLeftCANTalon);
     	matchMotors(frontRightCANTalon, middleRightCANTalon, rearRightCANTalon);
+    	SmartDashboard.putNumber("leftEncoder", leftEncoder.getDistance());
+    	SmartDashboard.putNumber("leftEncoderGraph", leftEncoder.getDistance()); //for tuning
+    	SmartDashboard.putNumber("rightEncoder", rightEncoder.getDistance());
+    	SmartDashboard.putNumber("rightEncoderGraph", rightEncoder.getDistance()); //for tuning
+    	SmartDashboard.putNumber("frontLeft", frontLeftCANTalon.get());
+    	SmartDashboard.putNumber("middleLeft", middleLeftCANTalon.get());
+    	SmartDashboard.putNumber("rearLeft", rearLeftCANTalon.get());
+    	SmartDashboard.putNumber("frontRight", frontRightCANTalon.get());
+    	SmartDashboard.putNumber("middleRight", middleRightCANTalon.get());
+    	SmartDashboard.putNumber("rearRight", rearRightCANTalon.get());
     	logger.log(constants.logging);
     }
     

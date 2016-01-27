@@ -55,11 +55,11 @@ public class Constants {
 	
 	public final boolean logging = true;
 	       
-	public double kP = 0.0;
+	public double kP = 1.0;
 	public double kI = 0.0;
-	public double kD = 0.1;
+	public double kD = 1.0;
 	public double kF = 0.0;
-	public double PIDtolerance = 5.0;
+	public double PIDtolerance = 1.0;
 	
 	private Constants(){
 		if (system == System_Type.Alpha){
